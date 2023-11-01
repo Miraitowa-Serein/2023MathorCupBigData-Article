@@ -49,9 +49,9 @@
 
 	\subsection{各问题逐一分析}
 	\begin{itemize}
-		\item \textbf{问题一}：其核心目的在于结合给定的图像数据集，对其进行特征的提取，从而建立一个用于识别其为正常道路或是坑洼道路的模型。此外，该模型需要具有识别率高、速度快、分类准确的特点。
-		\item \textbf{问题二}：其核心目的在于对问题一的模型进行训练，并对其进行多维度的评估分析，以保证模型的准确性、快速性及普适性。
-		\item \textbf{问题三}：其核心目的在于利用上述已建立的模型，对未知数据集图像进行分类，并保存结果。
+		\item \textbf{问题一}：其核心目的在于{\heiti 结合给定的图像数据集，对其进行特征的提取，从而建立一个用于识别其为正常道路或是坑洼道路的模型}。此外，该模型需要具有{\heiti 识别率高、速度快、分类准确}的特点。因此
+		\item \textbf{问题二}：其核心目的在于{\heiti 对问题一的模型进行训练，并对其进行多维度的评估分析，以保证模型的准确性、快速性及普适性}。
+		\item \textbf{问题三}：其核心目的在于{\heiti 利用上述已建立的模型，对未知数据集图像进行分类，并保存结果}。
 	\end{itemize}
 	\section{符号说明}
 	\begin{center}
@@ -76,13 +76,9 @@
 		\end{tabularx}}
 	\end{center}
 	\section{模型的假设}
-	本文对于模型的假设与初赛假设一致，如下：
 	\begin{itemize}
 		\item \textbf{假设一}：语音与上网业务的八项评分中，存在个别用户乱评、错评现象；
-		\item \textbf{假设二}：除个别用户的部分评分外，其余所有数据真实且符合实际情况；
-		\item \textbf{假设三}：用户评分还受到除附件中因素之外的因素的影响；
-		\item \textbf{假设四}：给定的数据集可全面体现用户整体情况；
-		\item \textbf{假设五}：对于同一业务，学习数据与预测数据的内在规律是一致的。
+		\item \textbf{假设二}：除个别用户的部分评分外，其余所有数据真实且符合实际情况。
 	\end{itemize}
 	\section{模型的建立与求解}
 	\subsection{图像文件预处理}\label{图像文件预处理}
@@ -261,15 +257,15 @@
 	这里，我们选用线性滤波中的\textbf{高斯滤波（Gauss Blur）}、非线性滤波中的\textbf{双边滤波（Bilateral Blur）}、以及对图像进行\textbf{顺时针旋转$\boldsymbol{\frac{\pi}{6}}$}处理。
 	\begin{itemize}
 		\item \textbf{高斯滤波}是一种线性平滑滤波。其基本原理是使用高斯核对图像进行卷积操作，进行加权平均的过程。每一个像素点的值，都由其邻域内的其他像素值和本身经过加权平均后得到。高斯核的标准差和大小决定了滤波器的效果，标准差越小，滤波器的效果越不明显，但是不会导致图像的细节信息丢失。其权值随着距离中心像素点的距离增加而逐渐减小，从而保留了图像的边缘信息。使用公式如下：
-		\begin{eqnarray}
+		\begin{equation}
 			G\left(X,Y\right)=\frac{1}{2\pi\sigma^2}\exp\left(-\frac{X^2+Y^2}{2\sigma^2}\right)
-		\end{eqnarray}
+		\end{equation}
 		\item \textbf{双边滤波}是一种基于高斯滤波的非线性滤波方法，目的是解决高斯滤波造成的边缘模糊。结合图像的空间邻近度和像素值相似度，同时考虑空域信息和灰度相似性，实现保边去噪。双边滤波器比高斯滤波多一个高斯核。它是基于像素颜色分布的高斯滤波函数，所以在边缘附近，当两个像素距离很近时，只有同时当颜色很接近时影响才会较大，反之，虽然距离很近，但颜色差距较大，那么平滑权重也会很小。
 		
 		为实现双边滤波，我们首先定义滤波器的参数，即空间域核函数和像素值域核函数；然后计算出每个像素在空间域和像素值域上的权重；最后根据计算得到的权重，对每个像素的周围像素进行加权平均，以得到滤波后的像素值。其公式可表示为：
-		\begin{eqnarray}
+		\begin{equation}
 			I_f\left( X,Y \right) =\frac{1}{G\left( X,Y \right)}\sum_{\left( i,j \right) \in \Omega}{I\left( X+i,Y+j \right) \cdot F_s\left( i,j \right)}\cdot F_f\left[ I\left( X,Y \right) ,I\left( X+i,Y+j \right) \right] 
-		\end{eqnarray}
+		\end{equation}
 		上式中各参量含义如下：
 		\begin{itemize}
 			\item $I_f\left(X,Y\right)$：滤波后的图像像素值；
@@ -300,10 +296,105 @@
 	至此，模型的数据前期准备已经完成。
 	\subsection{分类模型的建立}
 	\subsubsection{基于主成分分析降维、网格调优的支持向量机}
+	由于读取的数据本质上为特征向量，其维度较高，对于模型的训练时长、复杂度将会造成一定影响，因此这里我们首先使用\textbf{主成分分析（Principal Component Analysis, PCA）}对数据集进行降维，其实质上是将$k$维特征映射到$n$维上，这$n$维是新的正交特征，即主成分。PCA的工作就是从原始的空间中找一组相互正交的坐标轴。其中，第一个新坐标轴选取是原始数据中方差最大的方向，第二个新坐标轴选取是与第一个坐标轴正交的平面中使得方差最大的方向，第三个轴是与第一、二个轴正交的平面中方差最大的方向。依次类推，可以得到$k$个坐标轴。通过这种方式获得的新的坐标轴大部分方差都均含在上述的$n$个坐标轴中，后面的坐标轴所含的方差近似于$0$。因此，我们可以忽略之后的坐标轴，只保留前面$k$个含有绝大部分方差的坐标轴。这相当于只保留包含绝大部分方差的维度特征，而忽略包含方差几乎为$0$的特征维度，从而对数据特征的降维处理。我们通过一组数据的样本均值和样本方差计算出两个样本之间的协方差，根据所求的协方差矩阵计算其特征值与特征向量，再将特征向量单位化得到基向量变换矩阵，最后利用基向量变换矩阵与原始矩阵做内积，得到降维后的矩阵。对数据集计算协方差矩阵，公式如下：
+	\begin{equation}
+		\boldsymbol{C}=\left[ \begin{matrix}
+			\text{Cov}\left( X_1,X_2 \right)&		\text{Cov}\left( X_1,X_2 \right)&		\cdots&		\text{Cov}\left( X_1,X_n \right)\\
+			\text{Cov}\left( X_2,X_1 \right)&		\text{Cov}\left( X_2,X_2 \right)&		\cdots&		\text{Cov}\left( X_2,X_n \right)\\
+			\vdots&		\vdots&		\ddots&		\vdots\\
+			\text{Cov}\left( X_n,X_1 \right)&		\text{Cov}\left( X_n,X_2 \right)&		\cdots&		\text{Cov}\left( X_n,X_n \right)\\
+		\end{matrix} \right] \label{C}
+	\end{equation}
+	其中，每一个元素定义如下\textcolor{blue}{\cite{刘建新}}
+	\begin{equation}
+		\text{Cov}=\left( X,Y \right)=E\left\{\left[X-E\left(X\right)\right]\left[Y-E\left(X\right)\right]\right\}=E\left(XY\right)-E\left(X\right)E\left(Y\right) \label{Cov}
+	\end{equation}
+	其中$E\left(X\right)$为该列数据的均值。
+
+	之后，计算上述协方差矩阵的特征值$\lambda_n$及其对应的特征向量$\boldsymbol{u}_{nj}$，这里我们不妨令$\lambda_1\geqslant\lambda_2\geqslant\cdots\lambda_n\geqslant 0$，由特征向量组成$n$和新的指标变量
+	\begin{equation}
+		\left\{ \begin{array}{l}
+			y_1=\boldsymbol{u}_{11}x_1+\boldsymbol{u}_{21}x_2+\cdots +\boldsymbol{u}_{n1}x_n\\
+			y_2=\boldsymbol{u}_{12}x_1+\boldsymbol{u}_{22}x_2+\cdots +\boldsymbol{u}_{n2}x_n\\
+			\vdots\\
+			y_3=\boldsymbol{u}_{1n}x_1+\boldsymbol{u}_{2n}x_2+\cdots +\boldsymbol{u}_{nn}x_n\\
+		\end{array} \right. 
+	\end{equation}
+	其中$y_n$是第$n$个主成分。
+
+	在PCA的基础上，我们建立\textbf{支持向量机（Support Vector Machine, SVM）}二分类模型。其是建立在结构风险最小原理及Vapnik-Chervonenkis理论基础之上的\textcolor{blue}{\cite{汪海燕}}，以有限的数据信息，在数据样本中找出合适区分类别的决策分界面，与合适的边界分界面。实现分类误差最小的问题实质即求解下列方程\textcolor{blue}{\cite{张松兰}}：
+	\begin{equation}
+		\begin{array}{cl}
+			\min & L\left( \omega \right) =\frac{1}{2}\lVert \omega \rVert +C\sum\limits_{i=1}^n{\xi}\\
+			\text{s.t.\ } & y_i\left( \omega ^{\text{T}}\varphi \left( x_i \right) +b \right) \geqslant 1-\xi\\
+		\end{array}
+	\end{equation}
+	其中，$\xi>0$为松弛变量，$\varphi\left(x_i\right)$为核函数，$C$为惩罚系数。
+
+	此外，可针对不同的数据集的特征选择不同的\textbf{核函数（Kernel Function）}，从而达到较优秀的效果。对于该数据集，我们选择\textbf{高斯核函数（Radial Basis Function，RBF）}，其定义公式如下：
+	\begin{equation}
+		K\left(x_i, x_j\right)=\exp \left(-\frac{\left\|x_i-x_j\right\|^{2}}{2\sigma^{2}}\right)=\exp \left(-\gamma \left\|x_i-x_j\right\|^{2}\right)
+	\end{equation}
+	
+	同时，为了将模型效果优化，我们将对SVM模型的超参数进行调优。这里我们选用\textbf{网格调优（Grid Search）}
 	\subsubsection{深度学习：CNN卷积神经网络}
 	\subsubsection{CNN-SVM的分类模型}
 	\subsection{模型的评估}
 	为更好地评估模型，我们针对上述三种模型进行多维度评估，并针对各模型进行针对性分析。这里我们用到的有：
+	\begin{itemize}
+		\item \textbf{模型训练及预测时间和（$T$）}
+		\item \textbf{准确率（Accuracy）}：即预测正确数占总数的比例，其计算公式如下：
+			\begin{equation}
+				\mathrm{Accuracy}=\frac{N_{\mathrm{TruePredict}}}{N_{\mathrm{Sample}}} \label{Accuracy}
+				\end{equation}
+			其中，$N_{\mathrm{TruePredict}}$为预测正确的样本数，$N_{\mathrm{Sample}}$为被预测的样本总数；
+		\item \textbf{损失值（Loss）}：这里我们采用Categorical Crossentropy\textcolor{blue}{\cite{损失函数}}，即交叉熵损失函数，其使用交叉熵（Cross Entropy）作为度量分类任务的差异，从而来衡量两者之间的概率分布的相似性，其公式如下：
+			\begin{equation}
+				\text{Loss}=-\sum_{i=1}^{\text{output size}}y_i\cdot\log\left(\hat{y}_i\right)
+			\end{equation}
+			其中，$y_i$为真实标签，$\hat{y}_i$为预测标签；
+		\item \textbf{分类报告（Classification Report）}：其可以直观得到模型各项参数，包括每一类别的精确率（Precision），召回率（Recall），F1分数值（F1-Score）。对于这三项值，其计算公式如下：
+		\begin{itemize}
+			\item {\heiti 精确率}
+			\begin{equation}
+				\mathrm{Precision} = \frac{TP}{TP+FP} \label{Precision}
+			\end{equation}
+			\item {\heiti 召回率}
+			\begin{equation}
+				\mathrm{Recall} = \frac{TP}{TP+FN} \label{Recall}
+			\end{equation}
+			\item {\heiti F1分数值} 
+			\begin{equation}
+				\mathrm{F}1 = \frac{2\times \mathrm{Precision}\times \mathrm{Recall}}{\mathrm{Precision}+\mathrm{Recall}}=\frac{TP}{TP+\frac{1}{2}\left(FP+FN\right)} \label{F1-Score}
+			\end{equation}
+		\end{itemize}
+		\item \textbf{混淆矩阵（Confusion Matrix）}：矩阵每一行表示样本标签的实际类别，在本题中表示道路类型：为正常还是坑洼的实际标签；每一列表示样本标签的预测类别，在本题中表示道路类型：为正常还是坑洼的预测标签。因此该图示的主对角线数据之和即为模型预测准确的样本数。这里此外还需要引入四项值，分别为$TP$、$FN$、$FP$、$TN$，其中T为True，F为False，这两个字母表示预测值与实际值是否相同；P为Positive，N为Negative，这两个字母表示预测出的是属于正类还是负类。而混淆矩阵可以直观地观察到预测准确与错误的情况，以及模型对于每一类别的区分程度。
+		\item \textbf{特征曲线及曲线下面积曲线（Receiver Operating Characteristic/Area Under the Curve, ROC/AUC）}：
+		\item \textbf{精确率召回率曲线（Precision-Recall Curve）}：首先我们需要引出模型的相关参数，定义如下：
+		\begin{itemize}
+			\item {\heiti 灵敏度}\textbf{（Sensitivity）}。灵敏度又被称为真阳性率，即$TP$率：
+			\begin{equation}
+				\mathrm{Sensitivity}=TPR=\frac{TP}{TP+FN} \label{Sensitivity}
+			\end{equation}
+			\item {\heiti 特异性}\textbf{（Specificity）}。特异性又被称为真阴性率，即$TN$率：
+			\begin{equation}
+				\mathrm{Specificity}=TNR=\frac{TN}{TN+FP} \label{Specificity}
+			\end{equation}
+			\item \textbf{1-Specificity}。称为假阳性率（False Positive Rate, $FPR$）：
+			\begin{equation}
+				FPR=1-\mathrm{Specificity}=\frac{FP}{FP+TN} \label{FPR}
+			\end{equation}
+			\item \textbf{1-Sensitivity}。称为假阴性率（False Negative Rate, $FNR$）：
+			\begin{equation}
+				FNR=1-\mathrm{Sensitivity}=\frac{FN}{FN+TP} \label{FNR}
+			\end{equation}
+		\end{itemize}
+		$FPR$和$FNR$均对数据分布的变化不敏感\textcolor{blue}{\cite{Tharwat}}，因此这两个指标可以用于在不平衡的数据上建立的模型效果的评价。
+		
+		对于ROC/AUC曲线，其以每一类别的$1-\mathrm{Specificity}$即$FPR$为横坐标，以$\mathrm{Sensitivity}$即$TPR$为纵坐标，其可体现出模型的灵敏度与特异性之间的关系与差异。因此，该图的理想点位于左上角，即$FPR=0$且$TPR=1$。换言之，当曲线越靠近左上角，模型效果就越优。从而，我们可以得到另一项指标，即曲线下面积（Area Under the Curve, AUC），由上述分析可知，AUC值越高，模型的整体效果也就越优。
+		\item \textbf{交叉验证（Cross Validation）}：在该方法中，每一条数据用于训练的次数均相同，且恰好被检验一次。假设使用$k(k=2,3,4,\cdots)$折交叉验证，将数据分为大小相等的$k$份，在每一次学习时，选择其中一份作为检验集，而余下的数据作为训练集，上述过程重复$k$次。此外，检验集是互斥的，并且能够有效地覆盖数据集\textcolor{blue}{\cite{数据挖掘导论}}。
+	\end{itemize}
+
 	\subsubsection{三种模型的效果逐一分析}
 	% \subsubsection{基于主成分分析降维、网格调优的SVM支持向量机}
 	% \subsubsection{深度学习：CNN卷积神经网络}
@@ -321,32 +412,17 @@
 	\begin{thebibliography}{99}
 	\bibitem{曹江华}曹江华. 复杂背景下非结构化道路可行驶区域检测研究[D].浙江科技学院,2021.
 
-	\bibitem{pstandard}CSDN.【数据预处理】sklearn实现数据预处理（归一化、标准化）[EB/OL].
-	
-	\url{https://blog.csdn.net/weixin_44109827/article/details/124786873}.
+	\bibitem{刘建新}刘建新,史志仙.概率论与数理统计[M].北京:高等教育出版社,2016:115.
 
+	\bibitem{汪海燕}汪海燕,黎建辉,杨风雷.支持向量机理论及算法研究综述[J].计算机应用研究,2014,31(05):1281-1286.
 
-	\bibitem{ppearson}王殿武,赵云斌,尚丽英,王凤刚,张震.皮尔逊相关系数算法在B油田优选化学防砂措施井的应用[J].精细与专用化学品,2022,30(07):26-28.DOI:10.19482/j.cn11-3237.2022.07.07.
+	\bibitem{张松兰}张松兰,王鹏,徐子伟.基于统计相关的缺失值数据处理研究[J].统计与决策,2016,No.456(12):13-16.
 
-	\bibitem{prf}饶雷,冉军,陶建权,胡号朋,吴沁,熊圣新.基于随机森林的海上风电机组发电机轴承异常状态监测方法[J].船舶工程,2022,44(S2):27-31.DOI:10.13788/j.cnki.cbgc.2022.S2.06.
+	\bibitem{损失函数}CSDN.损失函数：categorical\_crossentropy[EB/OL].\url{https://blog.csdn.net/qq_40661327/article/details/107034575}.
 
-	\bibitem{pxgboost1}陈振宇,刘金波,李晨,季晓慧,李大鹏,黄运豪,狄方春,高兴宇,徐立中.基于LSTM与XGBoost组合模型的超短期电力负荷预测[J].电网技术,2020,44(02):614-620.DOI:10.13335/j.1000-3673.pst.2019.1566.
+	\bibitem{Tharwat}A.Tharwat, Applied Computing and Informatics (2018). \url{https://doi.org/10.1016/j.aci.2018.08.003}.
 
-	\bibitem{pxgboost2}杨贵军,徐雪,赵富强.基于XGBoost算法的用户评分预测模型及应用[J].数据分析与知识发现,2019,3(01):118-126.
-
-	\bibitem{pxgboost3}Tianqi Chen and Carlos Guestrin. 2016. XGBoost: A Scalable Tree Boosting System. In Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD '16). Association for Computing Machinery, New York, NY, USA, 785–794. \url{https://doi.org/10.1145/2939672.2939785}.
-
-	\bibitem{pknn}张著英,黄玉龙,王翰虎.一个高效的KNN分类算法[J].计算机科学,2008(03):170-172.
-
-	\bibitem{psvm}汪海燕,黎建辉,杨风雷.支持向量机理论及算法研究综述[J].计算机应用研究,2014,31(05):1281-1286.
-
-	\bibitem{plightgbm}马晓君,沙靖岚,牛雪琪.基于LightGBM算法的P2P项目信用评级模型的设计及应用[J].数量经济技术经济研究,2018,35(05):144-160.DOI:10.13653/j.cnki.jqte.20180503.001.
-
-	\bibitem{plr}唐敏,张宇浩,邓国强.高效的非交互式隐私保护逻辑回归模型[J/OL].计算机工程:1-11[2023-01-04].DOI:10.19678/j.issn.1000-3428.0065549.
-
-	\bibitem{pstacking}史佳琪,张建华.基于多模型融合Stacking集成学习方式的负荷预测方法[J].中国电机工程学报,2019,39(14):4032-4042.DOI:10.13334/j.0258-8013.pcsee.181510.
-
-	\bibitem{procauc}A.Tharwat, Applied Computing and Informatics (2018). \url{https://doi.org/10.1016/j.aci.2018.08.003}.
+	\bibitem{数据挖掘导论}Tan P N, Steinbach M, Karpatne A, et al. Introduction to Data Mining[M]. Pearson, 2019:389.
 	\end{thebibliography}
 	\end{spacing}
 	\newpage
