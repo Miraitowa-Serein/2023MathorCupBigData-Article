@@ -13,6 +13,14 @@
 \keyword{特征工程；计算机视觉；支持向量机；评分预测；可视化评估}
 \begin{document}
 	\begin{abstract}
+		坑洼道路的高效与精确检测可以有效地推进自动无人驾驶、地质勘探、航天科学等领域的研究与应用。由于道路图像的环境背景复杂及多变性，传统的分类算法难以提取有效特征，导致效果较差。因此，本文旨在建立基于卷积神经网络图像特征提取的 SVM 模型，对坑洼道路进行检测与识别。
+		
+		{\heiti 针对问题一}，主要需要结合给定的图像数据进行特征的提取，从而建立一个用于识别其为正常道路或是坑洼道路的模型。此外，该模型需要具有识别率高、速度快、分类准确的特点。因此，本文首先
+
+		{\heiti 针对问题二}，主要需要对问题一的模型进行训练，并进行多维度的评估分析，以保证模型的准确性、快速性及普适性。
+
+		{\heiti 针对问题三}，主要需要利用上述已建立的模型，对未知数据集图像进行分类，并保存结果。
+		
 		{\heiti 最后}，本文对所建立的模型的优缺点进行了中肯的评价、提出了模型的改进措施以及对模型进行了一定推广。
 	\end{abstract}
 
@@ -35,6 +43,14 @@
 		\item \textbf{问题二：}对问题一中所建立的模型进行训练，并对其进行多维度的评估分析。
 		\item \textbf{问题三：}利用训练模型识别测试集中的坑洼图像，并展分析结果的合理性。
 	\end{itemize}
+	\subsection{本文思路}
+	为了便于理清思路，绘制出本文解决问题的流程图，如\textcolor{blue}{\cref{fig:流程图}}所示。
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.32]{流程图.pdf}
+		\caption{流程图}
+		\label{fig:流程图}
+	\end{figure}
 	\section{问题的分析}
 	\subsection{问题的整体分析}
 	该题是一个基于计算机视觉的坑洼道路的图像数据分析、预测类问题。
@@ -49,9 +65,9 @@
 
 	\subsection{各问题逐一分析}
 	\begin{itemize}
-		\item \textbf{问题一}：其核心目的在于{\heiti 结合给定的图像数据集，对其进行特征的提取，从而建立一个用于识别其为正常道路或是坑洼道路的模型}。此外，该模型需要具有{\heiti 识别率高、速度快、分类准确}的特点。因此
-		\item \textbf{问题二}：其核心目的在于{\heiti 对问题一的模型进行训练，并对其进行多维度的评估分析，以保证模型的准确性、快速性及普适性}。
-		\item \textbf{问题三}：其核心目的在于{\heiti 利用上述已建立的模型，对未知数据集图像进行分类，并保存结果}。
+		\item \textbf{问题一}：其核心目的在于{\heiti 结合给定的图像数据集，对其进行特征的提取，从而建立一个用于识别其为正常道路或是坑洼道路的模型}。此外，该模型需要具有{\heiti 识别率高、速度快、分类准确}的特点。首先，需要对图像文件进行预处理，包括人为再分类、文件夹分类，对标记错误的图像进行修正，并剔除异常的图像。之后从机理层面对正常与坑洼道路进行比较分析，包括原图、热力图、RGB直方图、灰度直方图对比、边缘及轮廓检测、以及阈值分割，从而有效地提取出图像特征。随后，对图像数据进行预处理，将划分标记好的文件读入内存中，分析各类占比，对数据集进行平衡化，在此基础上划分数据集为训练集及测试集，考虑到图像文件并未能很好地全面展现特征，因此考虑对训练集数据进行增强，增加模型的学习样本。完成上述步骤后，即开始建立模型。我们从三方面考虑，其一，利用主成分分析法对数据进行降维，再建立支持向量机模型，同时加入网格调优。其二，建立卷积神经网络深度学习模型，设定其输入层、卷积层、激活层、池化层、全连接层参数。其三，考虑到单一模型存在一定局限性，因此建立基于卷积神经网络图像特征提取的SVM模型，利用CNN网络对图像数据进行特征提取，再利用支持向量机对其进行分类。
+		\item \textbf{问题二}：其核心目的在于{\heiti 对问题一的模型进行训练，并对其进行多维度的评估分析，以保证模型的准确性、快速性及普适性}。因此，我们首先对问题一中所建立的前两个模型进行学习，并对其进行评估分析，主要从分类报告分析。之后将已训练好的CNN模型用于图像特征的提取，再次基础上再训练SVM模型，优化参数，并对其进行评估分析。本文用于评估模型效果的主要方法有：时间、准确率、损失值、分类报告、混淆矩阵、ROC/AUC曲线、精确率与召回率曲线、交叉验证。最后，对模型进行整体评价，选择出最优模型。
+		\item \textbf{问题三}：其核心目的在于{\heiti 利用上述已建立的模型，对未知数据集图像进行分类，并保存结果}。因此，我们需要读取问题一、二中所建立及训练好的模型，对未知数据集进行预测，但需要注意避免文件名与被预测值错位，并将其文件名与对应的类别保存好。
 	\end{itemize}
 	\section{符号说明}
 	\begin{center}
@@ -77,8 +93,8 @@
 	\end{center}
 	\section{模型的假设}
 	\begin{itemize}
-		\item \textbf{假设一}：语音与上网业务的八项评分中，存在个别用户乱评、错评现象；
-		\item \textbf{假设二}：除个别用户的部分评分外，其余所有数据真实且符合实际情况。
+		\item \textbf{假设一}：所给数据集存在因某些原因而标注异常的图像数据的现象；
+		\item \textbf{假设二}：所给数据集未能完整地表现出分类的特征。
 	\end{itemize}
 	\section{模型的建立与求解}
 	\subsection{图像文件预处理}\label{图像文件预处理}
@@ -114,10 +130,10 @@
 	\label{tab:异常图片处理}
 \end{table}
 	\subsubsection{文件夹分类}
-	为了后续模型的分析、建立与求解，我们将“normal”与“potholes”图像文件置于“DATA”文件下的“normal”及“potholes”文件夹中，作为二分类的数据集。该处理我们使用Python的os及shutil库进行处理，首先指定根目录为“DATA”，再在其下创建“normal”与“potholes”文件夹，之后读取“DATA”文件夹下的所有文件，若文件名中含有“normal”字符，则将其放置于“normal”文件夹中，否则放置于“potholes”文件夹中。具体处理代码见\textbf{附录-D.1，Data Preprocessing 数据预处理}。
+	为了后续模型的分析、建立与求解，我们将“normal”与“potholes”图像文件置于“DATA”文件下的“normal”及“potholes”文件夹中，作为二分类的数据集。该处理我们使用Python的os及shutil库进行处理，首先指定根目录为“DATA”，再在其下创建“normal”与“potholes”文件夹，之后读取“DATA”文件夹下的所有文件，若文件名中含有“normal”字符，则将其放置于“normal”文件夹中，否则放置于“potholes”文件夹中。具体处理代码见\textbf{附录-C.1，Data Preprocessing [数据预处理]}。
 	
 	至此，我们已将所有数据进行了人为再分类，并将数据集分别放于“normal”及"potholes"文件夹中，方便后续的处理。
-	\subsection{正常与坑洼道路的比较分析、图像特征提取}
+	\subsection{正常与坑洼道路的比较分析、图像特征提取}\label{分析}
 	为了方便后续模型的分析、建立与求解，我们还需要对图像数据进行机理分析，将标记为正常及坑洼的道路进行比较分析，并提取图像的特征。因此，我们从以下几个方面进行分析：
 	\begin{itemize}
 		\item \textbf{原图、热力图对比}：分析坑洼与正常道路的表层区别。
@@ -126,7 +142,7 @@
 		\item \textbf{阈值分割}：分析坑洼与正常道路的阈值分割特征。
 	\end{itemize}
 	
-	但由于图片较多，故我们选择“normal133.jpg”及“potholes1.jpg”进行对比分析。以下是具体分析内容，该部分具体处理代码见\textbf{附录-D.2，Comparative Analysis Of Normal And Potholes 正常与坑洼道路的比较分析}。
+	但由于图片较多，故我们选择“normal133.jpg”及“potholes1.jpg”进行对比分析。以下是具体分析内容，该部分具体处理代码见\textbf{附录-C.2，Comparative Analysis of Normal and Potholes [正常与坑洼道路的比较分析]}。
 	\subsubsection{原图、热力图对比}
 	“normal133.jpg”及“potholes1.jpg”原图及热力图对比，如\textcolor{blue}{\cref{fig:原图对比}}及\textcolor{blue}{\cref{fig:热力图对比}}所示。
 	\begin{figure}[H]
@@ -233,7 +249,7 @@
 	\scalebox{0.9}{
 	  \begin{tabular}{ccccc}
 	  \toprule
-			& \textbf{1：normal} & \textbf{0：potholes} & \textbf{正常道路与坑洼道路图像数据个数比值} & \textbf{总计} \\
+	  \textbf{数据集} & \textbf{1：normal} & \textbf{0：potholes} & \textbf{正常道路与坑洼道路图像数据个数比值} & \textbf{总计} \\
 	  \midrule
 	  经预处理的数据集 & 259   & 41    & 6.32  & 300 \\
 	  新数据集  & 352   & 329   & 1.07  & 681 \\
@@ -336,9 +352,59 @@
 		K\left(x_i, x_j\right)=\exp \left(-\frac{\left\|x_i-x_j\right\|^{2}}{2\sigma^{2}}\right)=\exp \left(-\gamma \left\|x_i-x_j\right\|^{2}\right)
 	\end{equation}
 	
-	同时，为了将模型效果优化，我们将对SVM模型的超参数进行调优。这里我们选用\textbf{网格调优（Grid Search）}
+	同时，为了将模型效果优化，我们将对SVM模型的超参数进行调优。这里我们选用\textbf{网格调优（Grid Search）}，对惩罚系数$C$进行调优，最终选定的$C=1.90$。具体实现代码见\textbf{附录-C.4  PCA-SVM [PCA降维、网格调优的支持向量机]}。
+
 	\subsubsection{深度学习：CNN卷积神经网络}
+	卷积神经网络是一类包含卷积计算且具有深度结构的前馈神经网络。\textbf{它主要由输入层、卷积层、激活层、池化层和全连接层构成}\textcolor{blue}{\cite{李莎}}。其具体框架如\textcolor{blue}{\cref{fig:CNN原理图}}所示。
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.36]{CNN原理图.pdf}
+		\caption{CNN原理图}
+		\label{fig:CNN原理图}
+	\end{figure}
+
+	其首先于输入层对数据进行去均值处理，而后在卷积层进行特征提取，将特征通过激活函数映射到数学空间形成特征图并将输出结果于激活层进行非线性映射\textcolor{blue}{\cite{孟琪琳}}，接着在池化层中将特征降维压缩，降低复杂程度。池化的常见方法有平均池化和最大池化两种，最大池化是将输入图像分割为多个子区域，然后从每个子区域中选择最大像素值作为子区域的输出值，以此对输入图像的尺寸和特征进行采样和减少，以减少计算量。平均池化是将输入图像分割为多个子区域后计算每个子区域所有像素值的平均值，将平均值作为子图像的输出值，也可以减少计算量\textcolor{blue}{\cite{刘幸倩}}。最后传递至全连接层，将全连接层各节点与上一层所有的节点结合起来。平均池化计算公式及最大池化计算公式为：
+	\begin{equation}
+		p_{l}^{\left( i,j \right)}=\frac{1}{S}\sum_{x=id}^{id+d}{\sum_{y=jd}^{jd+d}{a_{l}^{\left( x,y \right)}}}
+	\end{equation}
+	最大池化计算公式为：
+	\begin{equation}
+		p_{l}^{\left( i,j \right)}=\underset{\left( id,jd \right) \leqslant \left( x,y \right) \leqslant \left( id+d,jd+d \right)}{\max}a_{l}^{\left( x,y \right)}
+	\end{equation}
+	其中，$p_{l}^{\left( i,j \right)}$为第一层中坐标为$p_{l}^{\left( i,j \right)}$的特征值，$S$为池化区域的面积，$a_{l}^{\left( x,y \right)}$为输入特征途中坐标为$\left( x,y \right)$的特征值，$d$为步长。
+
+	\begin{equation}
+		p_{l}^{\left( i,j \right)}=\frac{1}{S}\sum_{x=id}^{id+d}{\sum_{y=jd}^{jd+d}{a_{l}^{\left( x,y \right)}}}
+	\end{equation}
+
+	根据\textcolor{blue}{\nameref{分析}}部分的分析，对于该分类问题及数据集的特征，我们对CNN卷积神经网络的结构进行架构，具体如下：
+	\begin{itemize}
+		\item \textbf{卷积层：}输入形状为$128\times 128$像素，$3$个通道（RGB图像），$32$个卷积核，卷积核大小为$5\times 5$，激活函数为ReLU
+		\item \textbf{最大池化层：}池化窗口大小为$2\times 2$
+		\item \textbf{卷积层：}输入形状为$64$个通道，卷积核大小为$3\times 3$，激活函数为ReLU
+		\item \textbf{最大池化层：}池化窗口大小为$2\times 2$
+		\item \textbf{卷积层：}输入形状为$128$个通道，卷积核大小为$3\times 3$，激活函数为ReLU
+		\item \textbf{最大池化层：}池化窗口大小为$2\times 2$
+		\item \textbf{卷积层：}输入形状为$128$个通道，卷积核大小为$3\times 3$，激活函数为ReLU
+		\item \textbf{最大池化层：}池化窗口大小为$2\times 2$
+		\item \textbf{卷积层：}输入形状为$128$个通道，卷积核大小为$3\times 3$，激活函数为ReLU
+		\item \textbf{最大池化层：}池化窗口大小为$2\times 2$
+		\item \textbf{展平层：}将卷积层的输出展平为一维数组
+		\item \textbf{随机丢弃层：}丢弃比例为$40\,\%$
+		\item \textbf{全连接层：}输入为展平后的数据，$128$个神经元，激活函数为ReLU
+		\item \textbf{全连接层：}输入为$128$个神经元，输出为$2$个类别（类别标签为$0$和$1$），激活函数为softmax
+	\end{itemize}
+	
+	为更好地展现CNN模型的架构，我们将其可视化，如\textcolor{blue}{\cref{fig:CNN模型架构}}所示。
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.66]{CNN架构.pdf}
+		\caption{CNN模型架构}
+		\label{fig:CNN模型架构}
+	\end{figure}
 	\subsubsection{CNN-SVM的分类模型}
+	传统的CNN模型由输入层、卷积层、激活层、池化层、全连接层构成，通过softmax进行输出。然而，由于softmax在针对非线性且稀疏的数据矩阵时，其效果不如传统机器学习算法\textcolor{blue}{\cite{ZHANGP}}。针对这一现象及避免单一模型的局限性，我们建立基于CNN与SVM组合的CNN-SVM模型，该模型利用基于监督学习的SVM模型实现分类，CNN模型实现特征提取。除此之外，此模型相比于传统CNN模型还增加了注意力机制\textcolor{blue}{\cite{李毅泉}}，此机制可理解为将更多的权重赋值在对图像识别有影响的特征上，同时减少对图像识别意义特征较小的权重。对于该模型：其一，将传统的CNN模型的softmax归一化函数更换为SVM模型，在一定程度上能够提升模型的泛化能力\textcolor{blue}{\cite{何铠}}；其二，该模型还增加了注意力机制，能够更好地提取图像信息的特征，从而提升模型精度。
+
 	\subsection{模型的评估}
 	为更好地评估模型，我们针对上述三种模型进行多维度评估，并针对各模型进行针对性分析。这里我们用到的有：
 	\begin{itemize}
@@ -396,14 +462,25 @@
 	\end{itemize}
 
 	\subsubsection{三种模型的效果逐一分析}
-	% \subsubsection{基于主成分分析降维、网格调优的SVM支持向量机}
-	% \subsubsection{深度学习：CNN卷积神经网络}
-	% \subsubsection{CNN-SVM的分类模型}
+	\begin{itemize}
+		\item \textbf{PCA-SVM}
+		\item \textbf{CNN}
+		\item \textbf{CNN-SVM}
+	\end{itemize}
 	\subsubsection{模型对比}
 	\subsection{未知数据集的预测}
 	\section{模型的评价与推广}
 	\subsection{模型的评价}
+	\begin{itemize}
+		\item \textbf{模型的优点}
+		\begin{enumerate}
+			\item 123
+			\item 123
+		\end{enumerate}
+		\item \textbf{模型的缺点}
+	\end{itemize}
 	\subsection{模型的推广}
+	此模型具备处理具有复杂特征图像的能力，且能够较好地进行分类，因此除了判别道路坑洼与否外，我们也可将此其应用于重大基础设施建设前的勘探过程中，对工程建设地区地形进行判别，准确且快速的确定该地区是否适合建设该工程。以此类推，除了工程方面，此模型还可应用于交通预警，此模型适用于各地交管局及城市建设市政管理部门。在一定程度上改善了当前的预警机制，为减少民众财产损失做出了贡献。
 	\newpage
 	
 	\phantomsection
@@ -417,6 +494,18 @@
 	\bibitem{汪海燕}汪海燕,黎建辉,杨风雷.支持向量机理论及算法研究综述[J].计算机应用研究,2014,31(05):1281-1286.
 
 	\bibitem{张松兰}张松兰,王鹏,徐子伟.基于统计相关的缺失值数据处理研究[J].统计与决策,2016,No.456(12):13-16.
+
+	\bibitem{李莎}李莎.基于改进卷积神经网络的上市企业财务风险预测研究[J].现代信息科技,2023,7(20):111-115.
+
+	\bibitem{孟琪琳}孟琪琳,窦燕.基于EMD-CNN-LSTM模型的铁路客运量短期预测研究[J/OL].铁道运输与经济:1-9[2023-10-30].
+
+	\bibitem{ZHANGP}ZHANG P,FANG Y.Research on text classification algorithm based on machine learning[J].Journal of Physics Conference Series,2020,1624:042010.
+
+	\bibitem{李毅泉}李毅泉. 基于注意力机制的显著区域提取研究和实现[D].北京交通大学,2007.
+
+	\bibitem{何铠}何铠,管有庆,龚锐.基于深度学习和支持向量机的文本分类模型[J].计算机技术与发展,2022,32(07):22-27.
+
+	\bibitem{刘幸倩}刘幸倩. 基于注意力增强卷积神经网络的滚动轴承故障诊断方法研究[D].东北石油大学,2023.
 
 	\bibitem{损失函数}CSDN.损失函数：categorical\_crossentropy[EB/OL].\url{https://blog.csdn.net/qq_40661327/article/details/107034575}.
 
@@ -439,58 +528,38 @@
 % \phantomsection
 % \addcontentsline{toc}{subsection}{[A]图示}
 % 	% \section*{[A]图表}
-	\noindent{\heiti [A]图示}
-\newpage
+% 	\noindent{\heiti [A]图示}
+% \newpage
 % \phantomsection
 % \addcontentsline{toc}{subsection}{[B]支撑文件列表}
 % 	% \section*{[B]支撑文件列表}
-	\noindent{\heiti [B]支撑文件列表}
+	\noindent{\heiti [A]支撑文件列表}
 	~\\
 
 	支撑文件列表如下（列表中不包含原始数据集）：
 	% Table generated by Excel2LaTeX from sheet 'Sheet2'
-	\begin{table}[htbp]
-	\centering
-	\scalebox{0.88}{
-	  \begin{tabular}{cc}
-	  \toprule
-	  \textbf{文件（夹）名} & \textbf{描述} \\
-	  \midrule
-	  附件6：result.xlsx & 用户评分预测结果 \\
-	  语音业务高分组描述.csv & 语音业务高分组数据描述 \\
-	  语音业务低分组描述.csv & 语音业务低分组数据描述 \\
-	  上网业务高分组描述.csv & 上网业务高分组数据描述 \\
-	  上网业务低分组描述.csv & 上网业务低分组数据描述 \\
-	  语音业务Sample.csv & 语音业务剔除不合理评分后样本数据 \\
-	  上网业务Sample.csv & 上网业务剔除不合理评分后样本数据 \\
-	  语音业务词云.txt & 语音业务词云图文本内容 \\
-	  上网业务词云.txt & 上网业务词云图文本内容 \\
-	  词云.txt & 语音及上网业务综合词云图文本内容 \\
-	  词云图.py & 语音及上网业务综合词云图代码文件 \\
-	  语音业务用户分析.ipynb & 语音业务评分特征分析Jupyter文件 \\
-	  上网业务用户分析.ipynb & 上网业务评分特征分析Jupyter文件 \\
-	  语音业务数据分析.ipynb & 语音业务模型建立Jupyter文件 \\
-	  上网业务数据分析.ipynb & 上网业务模型建立Jupyter文件 \\
-	  语音业务用户分析.html & 语音业务评分特征分析运行结果 \\
-	  上网业务用户分析.html & 上网业务评分特征分析运行结果 \\
-	  语音业务数据分析.html & 语音业务模型建立运行结果 \\
-	  上网业务数据分析.html & 上网业务模型建立运行结果 \\
-	  bg.jpg & 词云底图 \\
-	  wordcloud.png & 语音及上网业务综合词云图 \\
-	  figuresOne & 语音业务所有图示文件夹 \\
-	  figuresTwo & 上网业务所有图示文件夹 \\
-	  \bottomrule
-	  \end{tabular}}
-  	\end{table}
+	\begin{table}[H]
+		\centering
+		  \begin{tabular}{cc}
+		  \toprule
+		  \textbf{文件夹名} & \textbf{描述} \\
+		  \midrule
+		  html文件 & 包括所有解决问题的源程序运行结果 \\
+		  ipynb文件 & 包括所有解决问题的源程序源代码 \\
+		  py文件  & 包括所有解决问题的源程序输出python文件 \\
+		  test\_result.csv  & 已训练模型识别测试集坑洼图像结果 \\
+		  \bottomrule
+		  \end{tabular}
+	\end{table}
   
 \newpage
 % \phantomsection
 % \addcontentsline{toc}{subsection}{[C]使用的软件、环境}
 	% \section*{[C]使用的软件、环境}
-	\noindent{\heiti [C]使用的软件、环境}
-	~\\
+	\noindent{\heiti [B]使用的软件、环境}
+	% ~\\
 
-	为解决该问题，我们所使用的主要软件有：
+	\textbf{B.1 使用的软件及版本}
 	\begin{itemize}
 		\item TeX Live 2022
 		\item Visual Studio Code 1.83.1
@@ -499,7 +568,16 @@
 		\item Pycharm 2023.2.3 (Professional Edition)
 	\end{itemize}
 	
-	Python环境下所用使用到的库及其版本如下：
+	\textbf{B.2 模型训练所用计算机配置}
+	\begin{itemize}
+		\item Intel(R) Core(TM) i5-10200H CPU @ 2.40GHz
+		\item NVIDIA GeForce GTX 1650 Ti
+		\item NVIDIA CUDA 11.7.102 driver
+		\item 16.0 GB RAM
+		\item Windows 10 家庭中文版 22H2
+	\end{itemize}
+
+	\textbf{Python环境下所用使用到的库及其版本}
 \begin{table}[htbp]
 	\centering
 	\setlength{\aboverulesep}{0pt}
@@ -531,9 +609,9 @@
 % \phantomsection
 % \addcontentsline{toc}{subsection}{[D]问题解决源程序}
 	% \section*{[D]问题解决源程序}
-\noindent{\heiti [D]问题解决源程序}
+\noindent{\heiti [C]问题解决源程序}
 
-\textbf{D.1 Data Preprocessing 数据预处理}
+\textbf{C.1 Data Preprocessing [数据预处理]}
 \begin{python}
 #!/usr/bin/env python
 # coding: utf-8
@@ -561,7 +639,7 @@ for file in files:
 
 \end{python}
 
-\textbf{D.2 Comparative Analysis Of Normal And Potholes 正常与坑洼道路的比较分析}
+\textbf{C.2 Comparative Analysis of Normal and Potholes [正常与坑洼道路的比较分析]}
 \begin{python}
 #!/usr/bin/env python
 # coding: utf-8
@@ -763,7 +841,7 @@ plt.savefig('Figures\\potholes1轮廓检测.pdf', bbox_inches='tight')
 
 \end{python}
 
-\textbf{D.3 Random Plot Images 随机展现正常与坑洼道路图像}
+\textbf{C.3 Random Plot Images [随机展现正常与坑洼道路图像]}
 \begin{python}
 #!/usr/bin/env python
 # coding: utf-8
@@ -827,7 +905,7 @@ random_plot_images()
 
 \end{python}
 
-\textbf{D.4 PCA-SVM PCA降维、网格调优的支持向量机}
+\textbf{C.4 PCA-SVM [PCA降维、网格调优的支持向量机]}
 \begin{python}
 #!/usr/bin/env python
 # coding: utf-8
@@ -1062,7 +1140,7 @@ f.close()
 
 \end{python}
 
-\textbf{D.5 CNN 卷积神经网络}
+\textbf{C.5 CNN [卷积神经网络]}
 \begin{python}
 #!/usr/bin/env python
 # coding: utf-8
@@ -1273,7 +1351,7 @@ model.save('Models\\CNN.h5')
 
 \end{python}
 
-\textbf{D.6 CNN-SVM 卷积神经网络与支持向量机}
+\textbf{C.6 CNN-SVM [卷积神经网络与支持向量机]}
 \begin{python}
 #!/usr/bin/env python
 # coding: utf-8
@@ -1392,6 +1470,101 @@ import pickle
 with open('Models\\CNN-SVM.pkl', 'wb') as f:
     pickle.dump(svm, f)
 f.close()
+
+\end{python}
+
+\textbf{C.7 Predict [预测]}
+\begin{python}
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+import os
+import cv2
+import pickle
+import numpy as np
+import pandas as pd
+from keras.models import load_model
+
+# In[2]:
+
+
+CNNModel = load_model('Models\\CNN.h5')
+with open('Models\\CNN-SVM.pkl', 'rb') as f:
+    model = pickle.load(f)
+
+# In[3]:
+
+
+imagePath = []
+for dirname, _, filenames in os.walk('DATAPre\\'):
+    print(dirname, len(filenames))
+    for filename in filenames:
+        path = os.path.join(dirname, filename)
+        imagePath.append(path)
+
+len(imagePath)
+
+# In[4]:
+
+
+IMG_SIZE = 128
+X = []
+y = []
+imgName = []
+for image in imagePath:
+    try:
+        img = cv2.imread(image, cv2.IMREAD_COLOR)
+        img = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+        X.append(np.array(img))
+        imgName.append(image.split('\\')[1])
+    except:
+        pass
+
+# In[5]:
+
+
+X = np.array(X)
+X_train_features = CNNModel.predict(X)
+
+# In[6]:
+
+
+y_pred = model.predict(X_train_features)
+df = pd.DataFrame({'fnames': imgName, 'label': y_pred})
+df['label'] = df['label'].astype(int)
+df
+
+# In[7]:
+
+
+df.to_csv('test_result.csv', index=False)
+
+\end{python}
+
+\textbf{C.8 Images Display [图像展示]}
+\begin{python}
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+import cv2
+
+img = cv2.imread("DATA\\potholes\\potholes1.jpg", cv2.IMREAD_COLOR)
+img = cv2.resize(img, [256, 256])
+
+Gaussian = cv2.GaussianBlur(img, (3, 3), 1)
+Bilateral = cv2.bilateralFilter(img, 9, 75, 75)
+Rotate = cv2.warpAffine(img, cv2.getRotationMatrix2D((img.shape[1] / 2, img.shape[0] / 2), 30, 1),
+                        (img.shape[1], img.shape[0]))
+
+cv2.imwrite("potholes1_Gaussian.jpg", Gaussian)
+cv2.imwrite("potholes1_Bilateral.jpg", Bilateral)
+cv2.imwrite("potholes1_Rotate.jpg", Rotate)
 
 \end{python}
 \end{document}
