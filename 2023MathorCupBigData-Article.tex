@@ -10,16 +10,16 @@
 \bianhao{MCB2301959}
 \tihao{A}
 \timu{\textbf{基于卷积神经网络CNN图像特征提取的SVM坑洼道路检测与识别}}
-\keyword{计算机视觉；卷积神经网络；支持向量机；特征提取；可视化多维评估}
+\keyword{计算机视觉；卷积神经网络；支持向量机；特征提取；模型融合；可视化多维评估}
 \begin{document}
 	\begin{abstract}
-		坑洼道路的高效与精确检测可以有效地推进自动无人驾驶、地质勘探、航天科学等领域的研究与应用。由于道路图像的环境背景复杂及多变性，传统的分类算法难以提取有效特征，导致效果较差。因此，本文旨在建立基于卷积神经网络图像特征提取的 SVM 模型，对坑洼道路进行检测与识别。
+		坑洼道路的高效检测可有效地推进无人驾驶、地质勘探、航天科学等领域的研究与应用。由于道路图像的环境背景复杂及多变性，传统算法难以提取有效特征，效果较差。因此，本文旨在建立基于卷积神经网络图像特征提取的 SVM 模型，对坑洼道路进行检测与识别。
 		
-		{\heiti 针对问题一}，主要需要结合给定的图像数据进行特征的提取，从而建立一个用于识别其为正常道路或是坑洼道路的模型。此外，该模型需要具有识别率高、速度快、分类准确的特点。因此，本文首先
+		{\heiti 针对问题一}，需要提取给定图像的特征，建立一个用于识别其为正常或是坑洼道路的识别率高、速度快、分类准确的模型。首先，对图像文件\textbf{预处理}，包括\textbf{人为再分类}，对标记错误的进行修正，或剔除异常图像；再将两类图像置于各子文件中。其次，从\textbf{机理层面}对正常与坑洼道路进行比较分析，包括\textbf{原图、热力图、RGB与灰度直方图的对比、边缘与轮廓检测、阈值分割}，从而有效地提取出\textbf{图像特征}。之后，利用\textbf{opencv-python}读取图像，并加入\textbf{try-except异常处理}语块，\textbf{防止破损文件污染模型}；此外，计算出正常与坑洼道路的个数比值为$\boldsymbol{6.32}$，即\textbf{数据集类别不平衡}，因此采用\textbf{基于抽样的方法平衡化}；之后，划分数据集为训练集及测试集比例为$\boldsymbol{8:2}$；考虑到现有的图像未能较全面地展现特征，因此\textbf{对训练集采用高斯、双边滤波，旋转处理进行图像增强}。随后，建立支持向量机、卷积神经网络的单一模型，但由于CNN中softmax函数的局限性，因而，\textbf{利用卷积神经网络对图像信息的特征进行提取}，依据上述分析，设定其输入层、卷积层、激活层、池化层、全连接层参数，具体见\textcolor{blue}{\cref{fig:CNN模型架构}}；在此基础上，建立\textbf{支持向量机分类模型}，对道路类别进行分类。
 
-		{\heiti 针对问题二}，主要需要对问题一的模型进行训练，并进行多维度的评估分析，以保证模型的准确性、快速性及普适性。
+		{\heiti 针对问题二}，需要对问题一的模型进行训练，并进行多维度的评估分析，保证模型的准确性、快速性及普适性。因此，对问题一所建立的模型进行训练与测试，并从\textbf{模型耗时、准确率、分类报告、五折交叉验证，混淆矩阵、ROC/AUC曲线}进行多维度评价。模型\textbf{准确率在$\boldsymbol{95\,\%}$的置信水平下达到$\boldsymbol{\left(90\pm 8\right)\,\%}$}；其\textbf{精确率、召回率、F1分数值在各维度下均于$\boldsymbol{88\,\%}$及以上}；\textbf{ROC/AUC曲线靠近图的左上角，曲线下面积达到$\boldsymbol{0.90}$}，具体见\textcolor{blue}{\cref{fig:CNN-SVM分类报告图}}\textasciitilde\textcolor{blue}{\cref{fig:CNN-SVM精确率召回率曲线}}。此外，还将其与单一模型进行多维度对比，\textbf{准确率最高可提升$\boldsymbol{3\,\%}$}，模型提升效果良好，结果具体见\textcolor{blue}{\cref{tab:模型效果对比}}。
 
-		{\heiti 针对问题三}，主要需要利用上述已建立的模型，对未知数据集图像进行分类，并保存结果。
+		{\heiti 针对问题三}，需要利用上述已建立的模型，对未知数据集图像进行分类，并保存结果。经过读取模型、读取数据、数据集预处理、预测得出模型\textbf{在4942张图像中，识别出坑洼道路为3765张，识别为正常道路为1177张}。
 		
 		{\heiti 最后}，本文对所建立的模型的优缺点进行了中肯的评价、提出了模型的改进措施以及对模型进行了一定推广。
 	\end{abstract}
@@ -156,7 +156,7 @@
 	
 	但由于图片较多，故我们选择“normal133.jpg”及“potholes1.jpg”进行对比分析。以下是具体分析内容，该部分具体处理代码见\textbf{附录-C.2，Comparative Analysis of Normal and Potholes [正常与坑洼道路的比较分析]}。
 	\subsubsection{原图、热力图对比}
-	“normal133.jpg”及“potholes1.jpg”原图及热力图对比，如\textcolor{blue}{\cref{fig:原图对比}}及\textcolor{blue}{\cref{fig:热力图对比}}所示。
+	“normal133.jpg”及“potholes1.jpg”原图及热力图对比，如\textcolor{blue}{\cref{fig:原图对比}}及\textcolor{blue}{\cref{fig:热力图对比}}所示\textcolor{blue}{\footnote{本文所有可视化图示均为矢量图，若读者在阅读时发现图示字体过小，可适当放大 PDF页面，详细查看图示数据等。此外，本文所有图示、表格均已交叉引用，读者阅读PDF时可点击对应图表，进行跳转。}}。
 	\begin{figure}[H]
 		\centering
 			\centering
@@ -179,6 +179,8 @@
 	“normal133.jpg”及“potholes1.jpg”RGB及灰度直方图对比，如\textcolor{blue}{\cref{fig:RGB对比}}及\textcolor{blue}{\cref{fig:灰度对比}}所示。
 	
 	观察RGB直方图的对比，我们可以发现两者RGB三色整体变化具有一致性，但正常道路的RGB数值整体高于坑洼道路，且正常道路RGB峰值出现在像素值为$50\text{\textasciitilde}100$之间，而坑洼道路的RGB峰值出现在像素值为$0$与$250$处。
+
+	观察灰度直方图的对比，我们可先发现灰度直方图中正常道路所呈现的峰值远高于坑洼道路，其中坑洼道路的峰值出现在图像两侧，而正常道路的峰值出现在图像的中心位置。此外正常道路数值波动明显大于坑洼道路。故我们认为灰度直方图所展现的数值大小、分布及波动情况可以较好体现道路的坑洼情况。
 	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.5]{normal133RGB直方图.pdf}
@@ -187,8 +189,6 @@
 		\caption{RGB直方图对比}
 		\label{fig:RGB对比}
 	\end{figure}
-
-	观察灰度直方图的对比，我们可先发现灰度直方图中正常道路所呈现的峰值远高于坑洼道路，其中坑洼道路的峰值出现在图像两侧，而正常道路的峰值出现在图像的中心位置。此外正常道路数值波动明显大于坑洼道路。故我们认为灰度直方图所展现的数值大小、分布及波动情况可以较好体现道路的坑洼情况。
 	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.5]{normal133灰度直方图.pdf}
@@ -210,6 +210,7 @@
 	\end{figure}
 	观察边缘检测的对比，我们可以发现边缘检测后正常道路色彩连续完整，而坑洼道路的坑洼部分在边缘检测后整体呈现深度黑色，与平整的砂石路面形成了强烈对比。故我们认为采用边缘检测可以较好判断道路状况。
 
+	对道路的图片进行轮廓检测后，我们可以发现检测后无坑洼道路的图片颜色相同，而对于坑洼道路，图片上有很明显的颜色差别。经过分析，我们认为不同的颜色代表了道路的平整与坑洼，进行轮廓检测后，可以通过道路颜色的异同判断道路是否坑洼。
 	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.58]{normal133轮廓检测.pdf}
@@ -218,7 +219,6 @@
 		\caption{轮廓检测}
 		\label{fig:轮廓检测}
 	\end{figure}
-	对道路的图片进行轮廓检测后，我们可以发现检测后无坑洼道路的图片颜色相同，而对于坑洼道路，图片上有很明显的颜色差别。经过分析，我们认为不同的颜色代表了道路的平整与坑洼，进行轮廓检测后，可以通过道路颜色的异同判断道路是否坑洼。
 
 	\subsubsection{阈值分割}
 	“normal133.jpg”及“potholes1.jpg”阈值分割对比，如\textcolor{blue}{\cref{fig:阈值分割}}所示。
@@ -608,29 +608,29 @@
 	  \toprule
 	  \textbf{指标} & \textbf{计算维度} & \textbf{PCA-SVM} & \textbf{CNN} & \textbf{CNN-SVM} \\
 	  \midrule
-	  \multirow{4}[2]{*}{precision} & 0：potholes & 0.50  & 0.90  & 0.89  \\
-			& 1：normal & 0.89  & 0.88  & 0.92  \\
-			& macro & 0.70  & 0.89  & 0.91  \\
-			& weighted & 0.84  & 0.89  & 0.91  \\
+	  \multirow{4}[2]{*}{precision} & 0：potholes & 0.50  & \textbf{0.90 } & 0.89  \\
+			& 1：normal & 0.89  & 0.88  & \textbf{0.92 } \\
+			& macro & 0.70  & 0.89  & \textbf{0.91 } \\
+			& weighted & 0.84  & 0.89  & \textbf{0.91 } \\
 	  \midrule
-	  \multirow{4}[2]{*}{recall} & 0：potholes & 0.25  & 0.88  & 0.93  \\
-			& 1：normal & 0.96  & 0.90  & 0.88  \\
-			& macro & 0.61  & 0.89  & 0.90  \\
-			& weighted & 0.87  & 0.89  & 0.90  \\
+	  \multirow{4}[2]{*}{recall} & 0：potholes & 0.25  & 0.88  & \textbf{0.93 } \\
+			& 1：normal & \textbf{0.96 } & 0.90  & 0.88  \\
+			& macro & 0.61  & 0.89  & \textbf{0.90 } \\
+			& weighted & 0.87  & 0.89  & \textbf{0.90 } \\
 	  \midrule
-	  \multirow{4}[2]{*}{f1-score} & 0：potholes & 0.33  & 0.89  & 0.91  \\
-			& 1：normal & 0.93  & 0.89  & 0.90  \\
-			& macro & 0.63  & 0.89  & 0.90  \\
-			& weighted & 0.85  & 0.89  & 0.90  \\
+	  \multirow{4}[2]{*}{f1-score} & 0：potholes & 0.33  & 0.89  & \textbf{0.91 } \\
+			& 1：normal & \textbf{0.93 } & 0.89  & 0.90  \\
+			& macro & 0.63  & 0.89  & \textbf{0.90 } \\
+			& weighted & 0.85  & 0.89  & \textbf{0.90 } \\
 	  \midrule
-	  accuracy & 整体    & 0.87  & 0.89  & 0.90  \\
+	  accuracy & 整体    & 0.87  & 0.89  & \textbf{0.90 } \\
 	  \midrule
-	  $T$     & 共计    & 6\,m 8\,s 197\,ms & 5\,m 27\,s 323\,ms & 6\,m 15\,s 37\,ms \\
+	  T     & 共计    & 6\,m 8\,s 197\,ms & \textbf{5\,m 27\,s 323\,ms} & 6\,m 15\,s 37\,ms \\
 	  \bottomrule
 	  \end{tabular}}
-	\label{tab:模型效果对比}%
-  \end{table}%
-  
+	\label{tab:模型效果对比}
+\end{table}
+
 	\subsection{未知数据集的预测}
 	对于该问题，我们按以下步骤进行处理：
 	\begin{itemize}
